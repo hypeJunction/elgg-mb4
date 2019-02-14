@@ -13,8 +13,21 @@ Multibyte Support
 
 ## Usage
 
-Plugin MUST be installed with composer.
 After enabling the plugin, run the Upgrade from Admin dashboard.
+
+In `composer.json` of your project root, add:
+
+```json
+{
+    "autoload": {
+        "psr-4": {
+            "Elgg\\": "mod/elgg-mb4/classes/Elgg/"
+        }
+    }
+}
+```
+
+You can also use the autoload option to specify a path to a different version of the Database class that corresponds to your Elgg version.
 
 ## Important
 
