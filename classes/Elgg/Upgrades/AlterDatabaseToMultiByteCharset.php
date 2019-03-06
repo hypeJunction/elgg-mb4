@@ -114,7 +114,11 @@ class AlterDatabaseToMultiByteCharset {
 		];
 
 		// required to allow bigger index sizes required for utf8mb4
-		_elgg_services()->db->updateData("SET GLOBAL innodb_large_prefix = 'ON'");
+		try {
+		    _elgg_services()->db->updateData("SET GLOBAL innodb_large_prefix = 'ON'");
+		} catch (\Exception $e) {
+		    elgg_log($ex->getMessage(), 'WARNING');
+		}
 
 		_elgg_services()->db->updateData("
 				ALTER DATABASE
