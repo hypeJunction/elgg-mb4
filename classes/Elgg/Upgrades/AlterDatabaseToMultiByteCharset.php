@@ -22,7 +22,7 @@ class AlterDatabaseToMultiByteCharset {
 		'river',
 		'system_log',
 		'users_remember_me_cookies',
-		'users_sessions',
+		//'users_sessions',
 		'sites_entity',
 		'users_entity',
 		'objects_entity',
