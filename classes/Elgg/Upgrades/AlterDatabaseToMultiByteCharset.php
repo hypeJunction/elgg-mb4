@@ -114,7 +114,12 @@ class AlterDatabaseToMultiByteCharset {
 		];
 
 		// required to allow bigger index sizes required for utf8mb4
-		_elgg_services()->db->updateData("SET GLOBAL innodb_large_prefix = 'ON'");
+		try {
+		    _elgg_services()->db->updateData("SET GLOBAL innodb_large_prefix = 'ON'");
+		} catch (\Exception $e) {
+		    register_error($e->getMessage());
+		    elgg_log($e->getMessage(), 'WARNING');
+		}
 
 		_elgg_services()->db->updateData("
 				ALTER DATABASE
@@ -124,6 +129,7 @@ class AlterDatabaseToMultiByteCharset {
 			");
 
 		foreach ($this->utf8mb4_tables as $table) {
+		    try {
 			if (!empty($this->non_mb4_columns[$table])) {
 				foreach ($this->non_mb4_columns[$table] as $column => $index) {
 					if ($index) {
@@ -187,6 +193,10 @@ class AlterDatabaseToMultiByteCharset {
 						");
 				}
 			}
+		    } catch (\Exception $e) {
+			elgg_log($e->getMessage(), 'ERROR');
+			register_error($e->getMessage());
+		    }
 		}
 
 	}
