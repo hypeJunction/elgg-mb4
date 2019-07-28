@@ -115,10 +115,10 @@ class AlterDatabaseToMultiByteCharset {
 
 		// required to allow bigger index sizes required for utf8mb4
 		try {
-		    _elgg_services()->db->updateData("SET GLOBAL innodb_large_prefix = 'ON'");
+			_elgg_services()->db->updateData("SET GLOBAL innodb_large_prefix = 'ON'");
 		} catch (\Exception $e) {
-		    register_error($e->getMessage());
-		    elgg_log($e->getMessage(), 'WARNING');
+			//register_error($e->getMessage());
+			elgg_log($e->getMessage(), 'WARNING');
 		}
 
 		_elgg_services()->db->updateData("
@@ -129,74 +129,74 @@ class AlterDatabaseToMultiByteCharset {
 			");
 
 		foreach ($this->utf8mb4_tables as $table) {
-		    try {
-			if (!empty($this->non_mb4_columns[$table])) {
-				foreach ($this->non_mb4_columns[$table] as $column => $index) {
-					if ($index) {
-						if ($index['primary']) {
-							_elgg_services()->db->updateData("
+			try {
+				if (!empty($this->non_mb4_columns[$table])) {
+					foreach ($this->non_mb4_columns[$table] as $column => $index) {
+						if ($index) {
+							if ($index['primary']) {
+								_elgg_services()->db->updateData("
 									ALTER TABLE {$config['prefix']}{$table}
 									DROP PRIMARY KEY
 								");
-						} else {
-							_elgg_services()->db->updateData("
+							} else {
+								_elgg_services()->db->updateData("
 									ALTER TABLE {$config['prefix']}{$table}
 									DROP KEY {$index['name']}
 								");
+							}
 						}
 					}
 				}
-			}
 
-			_elgg_services()->db->updateData("
+				_elgg_services()->db->updateData("
 					ALTER TABLE {$config['prefix']}{$table}
 					ENGINE = InnoDB
 					ROW_FORMAT=DYNAMIC
 				");
 
-			_elgg_services()->db->updateData("
+				_elgg_services()->db->updateData("
 					ALTER TABLE {$config['prefix']}{$table}
 					CONVERT TO CHARACTER SET utf8mb4
 					COLLATE utf8mb4_general_ci
 				");
 
-			if (!empty($this->non_mb4_columns[$table])) {
-				foreach ($this->non_mb4_columns[$table] as $column => $index) {
-					if (empty($index['columns'])) {
-						// Alter table only if the key is not composite
-						_elgg_services()->db->updateData("
+				if (!empty($this->non_mb4_columns[$table])) {
+					foreach ($this->non_mb4_columns[$table] as $column => $index) {
+						if (empty($index['columns'])) {
+							// Alter table only if the key is not composite
+							_elgg_services()->db->updateData("
 								ALTER TABLE {$config['prefix']}{$table}
 								MODIFY $column VARCHAR(255)
 								CHARACTER SET utf8
 								COLLATE utf8_unicode_ci
 							");
-					}
+						}
 
-					if (!$index) {
-						continue;
-					}
+						if (!$index) {
+							continue;
+						}
 
-					$sql = "ADD";
-					if ($index['unique']) {
-						$sql .= " UNIQUE ({$index['name']})";
-					} else if ($index['primary']) {
-						$sql .= " PRIMARY KEY ({$index['name']})";
-					} else {
-						$key_columns = elgg_extract('columns', $index, [$column]);
-						$key_columns = implode(',', $key_columns);
-						$sql .= " KEY {$index['name']} ($key_columns)";
-					}
+						$sql = "ADD";
+						if ($index['unique']) {
+							$sql .= " UNIQUE ({$index['name']})";
+						} else if ($index['primary']) {
+							$sql .= " PRIMARY KEY ({$index['name']})";
+						} else {
+							$key_columns = elgg_extract('columns', $index, [$column]);
+							$key_columns = implode(',', $key_columns);
+							$sql .= " KEY {$index['name']} ($key_columns)";
+						}
 
-					_elgg_services()->db->updateData("
+						_elgg_services()->db->updateData("
 							ALTER TABLE {$config['prefix']}{$table}
 							$sql
 						");
+					}
 				}
+			} catch (\Exception $e) {
+				elgg_log($e->getMessage(), 'ERROR');
+				register_error($e->getMessage());
 			}
-		    } catch (\Exception $e) {
-			elgg_log($e->getMessage(), 'ERROR');
-			register_error($e->getMessage());
-		    }
 		}
 
 	}
