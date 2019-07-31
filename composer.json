@@ -1,0 +1,27 @@
+{
+    "name": "hypejunction/elgg-mb4",
+    "type": "elgg-plugin",
+    "description": "Adds multibyte (emoji) support",
+    "homepage": "http://hypejunction.com",
+    "keywords": [
+        "elgg",
+        "plugin",
+        "database"
+    ],
+    "license": "GPL-2.0",
+    "authors": [
+        {
+            "name": "Ismayil Khayredinov",
+            "email": "info@hypejunction.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0",
+        "composer/installers": "~1.0"
+    },
+    "autoload": {
+        "psr-0": {
+            "": "classes/"
+        }
+    }
+}
