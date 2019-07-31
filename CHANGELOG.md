@@ -1,3 +1,13 @@
+<a name="2.0.0"></a>
+# 2.0.0 (2019-07-31)
+
+
+### Features
+
+* **svc:** rewrite the whole thing ([1284397](https://github.com/hypeJunction/elgg-mb4/commit/1284397))
+
+
+
 <a name="1.0.2"></a>
 ## [1.0.2](https://github.com/hypeJunction/elgg-mb4/compare/1.0.1...1.0.2) (2019-07-28)
 
